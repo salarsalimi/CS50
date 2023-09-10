@@ -5,9 +5,9 @@
 int main(int argc, char *argv[])
 {
 
-    if (argc == 1 || argc > 2)
+    if (argc != 2)
     {
-        printf("please specify recover file as argument.\n./recovery file.raw ");
+        printf("please specify recover file as argument.\nrecovery file.raw ");
         return 1;
     }
 
@@ -28,25 +28,29 @@ int main(int argc, char *argv[])
     {
         if (buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF && (buffer[3] & 0xF0) == 0xE0)
         {
+            // if already was writing a jpg file close it first
             if (outptr != NULL)
             {
                 fclose(outptr);
             }
+            // create a new file with a new pointer 
             sprintf(filename, "%03d.jpg", count_jpeg++);
-
             outptr = fopen(filename, "w");
         }
 
+        // if the jpg file is open and writing into it add new content
         if (outptr != NULL)
         {
             fwrite(buffer, 512, 1, outptr);
         }
     }
+    
     // close last opened outptr
     if (outptr != NULL)
     {
         fclose(outptr);
     }
+    // Closing input File
     fclose(file);
 
     return 0;
